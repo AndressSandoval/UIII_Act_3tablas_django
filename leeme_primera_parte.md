@@ -215,6 +215,338 @@ mkdir -p app_Videojuegos/templates/genero
 
 ### 16. Crear los archivos `base.html`, `header.html`, `navbar.html`, `footer.html`, `inicio.html`
 
+¡Por supuesto! A continuación te doy todo el código de los archivos HTML y Python necesarios para tu proyecto Django. Esto incluye las plantillas HTML, las vistas, las URLs y todo lo que necesitas para la estructura completa.
+
+### **Estructura de Carpetas**
+
+```plaintext
+UIII_Videojuegos_0358/
+├── backend_Videojuegos/
+│   ├── manage.py
+│   ├── backend_Videojuegos/
+│   ├── app_Videojuegos/
+│   │   ├── migrations/
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── urls.py
+│   │   ├── templates/
+│   │   │   ├── base.html
+│   │   │   ├── footer.html
+│   │   │   ├── header.html
+│   │   │   ├── navbar.html
+│   │   │   ├── inicio.html
+│   │   │   └── genero/
+│   │   │       ├── agregar_genero.html
+│   │   │       ├── ver_generos.html
+│   │   │       ├── actualizar_genero.html
+│   │   │       └── borrar_genero.html
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+└── .venv/
+```
+
+---
+
+### **1. Archivos HTML**
+
+#### **`base.html`**
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Administración Videojuegos</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    {% include 'header.html' %}
+    {% include 'navbar.html' %}
+    
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    
+    {% include 'footer.html' %}
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+```
+
+---
+
+#### **`header.html`**
+
+```html
+<header class="header bg-light text-center py-3">
+    <h1>Sistema de Administración Videojuegos</h1>
+</header>
+```
+
+---
+
+#### **`navbar.html`**
+
+```html
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Sistema de Administración Videojuegos</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'inicio_videojuegos' %}">Inicio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Géneros</a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'agregar_genero' %}">Agregar Género</a></li>
+          <li><a class="dropdown-item" href="{% url 'ver_generos' %}">Ver Géneros</a></li>
+          <li><a class="dropdown-item" href="#">Actualizar Género</a></li>
+          <li><a class="dropdown-item" href="#">Borrar Género</a></li>
+        </ul>
+      </li>
+      <!-- Agregar más secciones como Plataformas y Videojuegos -->
+    </ul>
+  </div>
+</nav>
+```
+
+---
+
+#### **`footer.html`**
+
+```html
+<footer class="footer bg-light fixed-bottom text-center py-3">
+    <p>&copy; {{ current_year }} - Creado por Andrés Sandova, Cbtis 128</p>
+</footer>
+```
+
+---
+
+#### **`inicio.html`**
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+    <div class="text-center">
+        <h1>Bienvenido al Sistema de Administración Videojuegos</h1>
+        <img src="https://example.com/imagen_videojuegos.jpg" alt="Imagen de Videojuegos" class="img-fluid">
+    </div>
+{% endblock %}
+```
+
+---
+
+### **2. Archivos Específicos para Géneros**
+
+#### **`agregar_genero.html`**
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+<h2>Agregar Género</h2>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="nombre">Nombre del Género</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" required>
+    </div>
+    <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Agregar Género</button>
+</form>
+{% endblock %}
+```
+
+---
+
+#### **`ver_generos.html`**
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+<h2>Géneros Disponibles</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Nombre</th>
+      <th scope="col">Descripción</th>
+      <th scope="col">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for genero in generos %}
+      <tr>
+        <td>{{ genero.nombre }}</td>
+        <td>{{ genero.descripcion }}</td>
+        <td>
+          <a href="{% url 'actualizar_genero' genero.id %}" class="btn btn-warning btn-sm">Editar</a>
+          <a href="{% url 'borrar_genero' genero.id %}" class="btn btn-danger btn-sm">Borrar</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+```
+
+---
+
+#### **`actualizar_genero.html`**
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+<h2>Actualizar Género: {{ genero.nombre }}</h2>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="nombre">Nombre del Género</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" value="{{ genero.nombre }}" required>
+    </div>
+    <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required>{{ genero.descripcion }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Actualizar Género</button>
+</form>
+{% endblock %}
+```
+
+---
+
+#### **`borrar_genero.html`**
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+<h2>¿Estás seguro de que deseas borrar el género: {{ genero.nombre }}?</h2>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'ver_generos' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
+```
+
+---
+
+### **3. Views en `views.py`**
+
+En `app_Videojuegos/views.py`, escribe las funciones para manejar el CRUD de **Géneros**:
+
+```python
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Genero
+from django.http import HttpResponse
+
+# Vista de inicio
+def inicio_videojuegos(request):
+    return render(request, 'inicio.html')
+
+# Agregar género
+def agregar_genero(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        descripcion = request.POST.get('descripcion')
+        Genero.objects.create(nombre=nombre, descripcion=descripcion)
+        return redirect('ver_generos')
+    return render(request, 'genero/agregar_genero.html')
+
+# Ver géneros
+def ver_generos(request):
+    generos = Genero.objects.all()
+    return render(request, 'genero/ver_generos.html', {'generos': generos})
+
+# Actualizar género
+def actualizar_genero(request, id):
+    genero = get_object_or_404(Genero, id=id)
+    if request.method == 'POST':
+        genero.nombre = request.POST.get('nombre')
+        genero.descripcion =
+```
+
+
+request.POST.get('descripcion')
+genero.save()
+return redirect('ver_generos')
+return render(request, 'genero/actualizar_genero.html', {'genero': genero})
+
+# Borrar género
+
+def borrar_genero(request, id):
+genero = get_object_or_404(Genero, id=id)
+if request.method == 'POST':
+genero.delete()
+return redirect('ver_generos')
+return render(request, 'genero/borrar_genero.html', {'genero': genero})
+
+````
+
+---
+
+### **4. URLs en `urls.py`**
+
+Crea el archivo `urls.py` dentro de la aplicación `app_Videojuegos` con las rutas necesarias:
+
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.inicio_videojuegos, name='inicio_videojuegos'),
+    path('agregar_genero/', views.agregar_genero, name='agregar_genero'),
+    path('ver_generos/', views.ver_generos, name='ver_generos'),
+    path('actualizar_genero/<int:id>/', views.actualizar_genero, name='actualizar_genero'),
+    path('borrar_genero/<int:id>/', views.borrar_genero, name='borrar_genero'),
+]
+````
+
+---
+
+### **5. Configuraciones en `settings.py` y `urls.py` del Proyecto**
+
+En el archivo `settings.py`, agrega la aplicación `app_Videojuegos` a `INSTALLED_APPS`:
+
+```python
+INSTALLED_APPS = [
+    ...
+    'app_Videojuegos',
+]
+```
+
+En el archivo `urls.py` del proyecto (backend_Videojuegos/urls.py), agrega la ruta a las URLs de la aplicación:
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('app_Videojuegos.urls')),
+]
+```
+
+---
+
+Con todo esto, deberías tener la estructura completa para el proyecto. ¡Espero que te sirva! Si tienes alguna pregunta o necesitas algo más, no dudes en pedírmelo.
+
 En la carpeta `app_Videojuegos/templates/`, crea los siguientes archivos.
 
 #### `base.html`
